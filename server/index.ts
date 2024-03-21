@@ -25,8 +25,20 @@ app.use(express.json());
 app.get("/users", async (req, res) => {
   try {
     const data = await DB.select().from(person);
-    console.log(data);
     res.json({ message: "Fetched users", data: data });
+  } catch (error) {
+    res.json({ message: "There was an error", data: null });
+  }
+});
+
+app.post("/users", async (req, res) => {
+  try {
+    const { userCountry, userName } = req.body;
+    const data = await DB.insert(person).values({ userName, userCountry });
+
+    console.log(data);
+
+    res.json({ message: "User added", data: data });
   } catch (error) {
     res.json({ message: "There was an error", data: null });
   }
