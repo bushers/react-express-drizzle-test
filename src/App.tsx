@@ -1,31 +1,20 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import {
+  addUserMutation,
+  deleteUserMutation,
+  getUsersQuery,
+} from "./users/dataQueries";
 import "./App.css";
-import { queryClient } from "./main";
 
-interface User {
+export interface User {
   id: number;
   userName: string;
   userCountry: string;
 }
 
-const USER_QUERY_KEY = "users";
-const API_ENDPOINT = "http://localhost:3005/users";
-
 function App() {
-  const { isPending, error, data, isFetching } = useQuery<Array<User>>({
-    queryKey: [USER_QUERY_KEY],
-    queryFn: () => axios.get(API_ENDPOINT).then((res) => res.data.data),
-  });
-
-  const mutation = useMutation({
-    mutationFn: (newUser: Omit<User, "id">) => {
-      return axios.post(API_ENDPOINT, newUser);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [USER_QUERY_KEY] });
-    },
-  });
+  const { isPending, error, data, isFetching } = getUsersQuery();
+  const addUser = addUserMutation();
+  const deleteUser = deleteUserMutation();
 
   if (isPending) return "Loading...";
 
@@ -35,7 +24,7 @@ function App() {
     <div>
       <button
         onClick={() =>
-          mutation.mutate({ userName: "new", userCountry: "Canada" })
+          addUser.mutate({ userName: "new", userCountry: "Canada" })
         }
       >
         Add User
@@ -53,6 +42,8 @@ function App() {
             <span style={{ marginRight: 10 }}>{u.id}</span>
             <span>{u.userName}</span>
             <span style={{ marginLeft: "auto" }}>{u.userCountry}</span>
+
+            <button onClick={() => deleteUser.mutate(u.id)}>Delete</button>
           </li>
         ))}
       </ul>

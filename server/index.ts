@@ -10,13 +10,14 @@ export const DB: BetterSQLite3Database = drizzle(sqlite);
 import express from "express";
 import cors from "cors";
 import { person } from "./db/schema.js";
+import { eq } from "drizzle-orm";
 
 const app = express();
 
 const corsOptions = {
   AccessControlAllowOrigin: "*",
   origin: "*",
-  methods: "GET,POST",
+  methods: "GET,POST,PUT,DELETE",
 };
 
 app.use(cors(corsOptions));
@@ -39,6 +40,21 @@ app.post("/users", async (req, res) => {
     console.log(data);
 
     res.json({ message: "User added", data: data });
+  } catch (error) {
+    res.json({ message: "There was an error", data: null });
+  }
+});
+
+app.delete("/user/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (id && typeof id === "string") {
+      const data = await DB.delete(person).where(eq(person.id, parseInt(id)));
+      res.json({ message: "User deleted", data: data });
+    } else {
+      res.json({ message: "Invalid user ID", data: null });
+    }
   } catch (error) {
     res.json({ message: "There was an error", data: null });
   }
