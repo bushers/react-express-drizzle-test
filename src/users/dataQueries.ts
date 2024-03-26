@@ -23,6 +23,19 @@ export const addUserMutation = () =>
     },
   });
 
+export const editUserMutation = () =>
+  useMutation({
+    mutationFn: (user: User) => {
+      return axios.put(API_ENDPOINT_WITH_ID + user.id, {
+        userName: user.userName,
+        userCountry: user.userCountry,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [USER_QUERY_KEY] });
+    },
+  });
+
 export const deleteUserMutation = () =>
   useMutation({
     mutationFn: (id: number) => {

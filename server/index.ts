@@ -45,6 +45,23 @@ app.post("/users", async (req, res) => {
   }
 });
 
+app.put("/user/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (id && typeof id === "string") {
+      const data = await DB.update(person)
+        .set({ ...req.body })
+        .where(eq(person.id, parseInt(id)));
+      res.json({ message: "User deleted", data: data });
+    } else {
+      res.json({ message: "Invalid user ID", data: null });
+    }
+  } catch (error) {
+    res.json({ message: "There was an error", data: null });
+  }
+});
+
 app.delete("/user/:id", async (req, res) => {
   try {
     const { id } = req.params;

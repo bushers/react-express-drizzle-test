@@ -1,6 +1,7 @@
 import {
   addUserMutation,
   deleteUserMutation,
+  editUserMutation,
   getUsersQuery,
 } from "./users/dataQueries";
 import "./App.css";
@@ -14,6 +15,7 @@ export interface User {
 function App() {
   const { isPending, error, data, isFetching } = getUsersQuery();
   const addUser = addUserMutation();
+  const editUser = editUserMutation();
   const deleteUser = deleteUserMutation();
 
   if (isPending) return "Loading...";
@@ -43,6 +45,17 @@ function App() {
             <span>{u.userName}</span>
             <span style={{ marginLeft: "auto" }}>{u.userCountry}</span>
 
+            <button
+              onClick={() =>
+                editUser.mutate({
+                  id: u.id,
+                  userCountry: "New Zealand",
+                  userName: "Edited Name",
+                })
+              }
+            >
+              Edit
+            </button>
             <button onClick={() => deleteUser.mutate(u.id)}>Delete</button>
           </li>
         ))}
